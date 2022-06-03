@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { createRoot } from 'react-dom/client';
+import gsap from 'gsap';
 
 import Score from './components/Score';
 import Timer from './components/Timer';
@@ -8,11 +9,19 @@ import Mole from './components/Mole';
 
 const TIME_LIMIT = 30000;
 const NUMBER_OF_MOLES = 5;
+const MOLE_SCORE = 100;
+
+const generateMoles = amount => new Array(amount).fill().map(() => ({
+    speed: gsap.utils.random(0.5, 1),
+    delay: gsap.utils.random(0.5, 4),
+    points: MOLE_SCORE
+}))
 
 function Game() {
     const [playing, setPlaying] = useState(false);
     const [finished, setFinished] = useState(false);
     const [score, setScore] = useState(0);
+    const [moles, setMoles] = useState(generateMoles(NUMBER_OF_MOLES));
 
     const onWhack = points => setScore(score + points);
 
@@ -27,6 +36,7 @@ function Game() {
         setFinished(true);
     }
 
+
     return (
         <>
             {!playing && !finished &&
@@ -38,19 +48,27 @@ function Game() {
 
             {playing && (
                 <>
-                    <button 
-                        className='end-game' 
+                    <button
+                        className='end-game'
                         onClick={endGame}
-                        >End Game
+                    >End Game
                     </button>
-                    <Score value={score} />
-                    <Timer
-                        time={TIME_LIMIT}
-                        onEnd={endGame} />
+                    <div className="info">
+                        <Score value={score} />
+                        <Timer
+                            time={TIME_LIMIT}
+                            onEnd={endGame} />
+                    </div>
                     <Moles>
                         {//Create 5 Moles
-                            new Array(NUMBER_OF_MOLES).fill().map(
-                                (_, index) => <Mole key={index} onWhack={onWhack}></Mole>
+                            moles.map(({ delay, speed, points }, index) =>
+                                <Mole
+                                    key={index}
+                                    onWhack={onWhack}
+                                    points={points}
+                                    delay={delay}
+                                    speed={speed}
+                                ></Mole>
                             )
                         }
                     </Moles>
@@ -58,7 +76,7 @@ function Game() {
             }
             {finished &&
                 <>
-                    <Score value={score}/>
+                    <Score value={score} />
                     <button onClick={startGame}>Play Again</button>
                 </>
             }
