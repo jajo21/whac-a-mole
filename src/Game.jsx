@@ -8,6 +8,7 @@ import Moles from './components/Moles';
 import Mole from './components/Mole';
 
 import usePersistentState from './hooks/use-persistent-state';
+import useAudio from './hooks/use-audio';
 
 const TIME_LIMIT = 30000;
 const NUMBER_OF_MOLES = 5;
@@ -26,8 +27,12 @@ function Game() {
     const [moles, setMoles] = useState(generateMoles(NUMBER_OF_MOLES));
     const [highScore, setHighScore] = usePersistentState('whac-a-mole-hi', 0);
     const [newHighScore, setNewHighScore] = useState(false);
+    const { play: playSqueak } = useAudio('https://assets.codepen.io/605876/squeak-in.mp3');
 
-    const onWhack = points => setScore(score + points);
+    const onWhack = points => {
+        playSqueak();
+        setScore(score + points);
+    }
 
     const startGame = () => {
         setScore(0);
