@@ -7,6 +7,8 @@ import Timer from './components/Timer';
 import Moles from './components/Moles';
 import Mole from './components/Mole';
 
+import usePersistentState from './hooks/use-persistent-state';
+
 const TIME_LIMIT = 30000;
 const NUMBER_OF_MOLES = 5;
 const MOLE_SCORE = 100;
@@ -22,6 +24,8 @@ function Game() {
     const [finished, setFinished] = useState(false);
     const [score, setScore] = useState(0);
     const [moles, setMoles] = useState(generateMoles(NUMBER_OF_MOLES));
+    const [highScore, setHighScore] = usePersistentState('whac-a-mole-hi', 0);
+    const [newHighScore, setNewHighScore] = useState(false);
 
     const onWhack = points => setScore(score + points);
 
@@ -29,11 +33,16 @@ function Game() {
         setScore(0);
         setPlaying(true);
         setFinished(false);
+        setNewHighScore(false);
     }
 
     const endGame = () => {
         setPlaying(false);
         setFinished(true);
+        if(score > highScore) {
+            setHighScore(score);
+            setNewHighScore(true);
+        }
     }
 
 
@@ -54,7 +63,7 @@ function Game() {
                     >End Game
                     </button>
                     <div className="info">
-                        <Score value={score} />
+                        <Score value={score} highScore={highScore} />
                         <Timer
                             time={TIME_LIMIT}
                             onEnd={endGame} />
@@ -76,7 +85,8 @@ function Game() {
             }
             {finished &&
                 <>
-                    <Score value={score} />
+                    {newHighScore && <div className="info-text">NEW High Score!</div>}
+                    <Score value={score} highScore={highScore} />
                     <button onClick={startGame}>Play Again</button>
                 </>
             }
