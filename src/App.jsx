@@ -1,14 +1,25 @@
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom/client';
+import React, {useEffect, useRef, useState} from 'react'
+import {createRoot} from 'react-dom/client';
 
-export default class App extends Component {
-  render() {
-    return (
-      <div>App</div>
-    )
-  }
+
+const Time = () => {
+    const [time, setTime] = useState(Date.now())
+    const timer = useRef(null)
+    useEffect(() => {
+        timer.current = setInterval(() => setTime(Date.now()), 1000)
+        return () => clearInterval(timer.current)
+    }, [])
+    return <h1>{`Time: ${time}`}</h1>
 }
 
-const app = ReactDOM.createRoot(document.getElementById('root'));
-app.render(<App/>);
+function App() {
+    return (
+        <Time />
+    )
+}
+export default App;
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<App />);
 
