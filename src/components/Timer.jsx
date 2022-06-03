@@ -18,7 +18,7 @@ function Timer({ time, interval = 1000, onEnd }) {
             clearInterval(timerRef.current)
         }
     }, [interval])
-    return <div>{`Time: ${internalTime / 1000}s`}</div>
+    return <div className='info-text'>{`Time: ${internalTime / 1000}s`}</div>
 }
 
 export default Timer;
